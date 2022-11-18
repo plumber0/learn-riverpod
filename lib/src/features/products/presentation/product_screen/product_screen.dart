@@ -16,30 +16,33 @@ import 'package:ecommerce_app/src/features/products/domain/product.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shows the product page for a given product ID.
-class ProductScreen extends ConsumerWidget {
+class ProductScreen extends StatelessWidget {
   const ProductScreen({super.key, required this.productId});
+
   final String productId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     // TODO: Read from data source
-    final productsRepository = ref.watch(productsRepositoryProvider);
-    final product = productsRepository.getProduct(productId);
     return Scaffold(
       appBar: const HomeAppBar(),
-      body: product == null
-          ? EmptyPlaceholderWidget(
-              message: 'Product not found'.hardcoded,
-            )
-          : CustomScrollView(
-              slivers: [
-                ResponsiveSliverCenter(
-                  padding: const EdgeInsets.all(Sizes.p16),
-                  child: ProductDetails(product: product),
-                ),
-                ProductReviewsList(productId: productId),
-              ],
-            ),
+      body: Consumer(builder: (context, ref, _) {
+        final productsRepository = ref.watch(productsRepositoryProvider);
+        final product = productsRepository.getProduct(productId);
+        return product == null
+            ? EmptyPlaceholderWidget(
+                message: 'Product not found'.hardcoded,
+              )
+            : CustomScrollView(
+                slivers: [
+                  ResponsiveSliverCenter(
+                    padding: const EdgeInsets.all(Sizes.p16),
+                    child: ProductDetails(product: product),
+                  ),
+                  ProductReviewsList(productId: productId),
+                ],
+              );
+      }),
     );
   }
 }
@@ -49,6 +52,7 @@ class ProductScreen extends ConsumerWidget {
 /// - add to cart
 class ProductDetails extends StatelessWidget {
   const ProductDetails({super.key, required this.product});
+
   final Product product;
 
   @override
