@@ -25,7 +25,6 @@ class AccountScreen extends ConsumerWidget {
   /// (without rebuilding the widget)
   /// * make sure to check state.isRefreshing if needed
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     /// ref.listen() is good for running some code in response to state changes
@@ -65,10 +64,15 @@ class AccountScreen extends ConsumerWidget {
                       /// ref.read() vs ref.watch()
                       /// use ref.watch() inside build() method to rebuild a widget when data changes
                       /// user ref.read() inside button callbacks to "do something"
-                      await ref
+                      final success = await ref
                           .read(accountScreenControllerProvider.notifier)
                           .signOut();
-                      navigator.pop();
+                      /// What about separation of concerns?
+                      /// We should move our business logic inside the controllers
+                      /// but controllers should NEVER depend on the BuildContext or anything to do with the UI
+                      if (success) {
+                        navigator.pop();
+                      }
                     }
                   },
           ),
