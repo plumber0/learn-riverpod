@@ -13,8 +13,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
 
+  /// watch() vs read() vs listen()
+  ///
+  /// use ref.watch() inside the build method to watch a provider
+  /// and rebuild when the state changes
+  ///
+  /// use ref.read() inside callbacks to access a provider
+  /// and call methods on the underlying object
+  ///
+  /// use ref.listen() to run some code when the state changes
+  /// (without rebuilding the widget)
+  /// * make sure to check state.isRefreshing if needed
+
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /// ref.listen() is good for running some code in response to state changes
+    ref.listen<AsyncValue<void>>(
+      accountScreenControllerProvider,
+      (previousState, state) {
+        if (!state.isLoading && state.hasError) {
+          showExceptionAlertDialog(
+            context: context,
+            title: 'Error'.hardcoded,
+            exception: state.error,
+          );
+        }
+      },
+    );
     final state = ref.watch(accountScreenControllerProvider);
     return Scaffold(
       appBar: AppBar(
