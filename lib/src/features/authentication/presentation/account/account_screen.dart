@@ -1,5 +1,6 @@
 import 'package:ecommerce_app/src/common_widgets/alert_dialogs.dart';
 import 'package:ecommerce_app/src/features/authentication/data/fake_auth_repository.dart';
+import 'package:ecommerce_app/src/features/authentication/presentation/account/account_screen_controller.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
 import 'package:flutter/material.dart';
@@ -14,29 +15,36 @@ class AccountScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(accountScreenControllerProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account'.hardcoded),
+        title: state.isLoading
+            ? const CircularProgressIndicator()
+            : Text('Account'.hardcoded),
         actions: [
           ActionTextButton(
             text: 'Logout'.hardcoded,
-            onPressed: () async {
-              // get the navigator before the async gap
-              final navigator = Navigator.of(context);
-              final logout = await showAlertDialog(
-                context: context,
-                title: 'Are you sure?'.hardcoded,
-                cancelActionText: 'Cancel'.hardcoded,
-                defaultActionText: 'Logout'.hardcoded,
-              );
-              if (logout == true) {
-                /// ref.read() vs ref.watch()
-                /// use ref.watch() inside build() method to rebuild a widget when data changes
-                /// user ref.read() inside button callbacks to "do something"
-                await ref.read(authRepositoryProvider).signOut();
-                navigator.pop();
-              }
-            },
+            onPressed: state.isLoading
+                ? null
+                : () async {
+                    // get the navigator before the async gap
+                    final navigator = Navigator.of(context);
+                    final logout = await showAlertDialog(
+                      context: context,
+                      title: 'Are you sure?'.hardcoded,
+                      cancelActionText: 'Cancel'.hardcoded,
+                      defaultActionText: 'Logout'.hardcoded,
+                    );
+                    if (logout == true) {
+                      /// ref.read() vs ref.watch()
+                      /// use ref.watch() inside build() method to rebuild a widget when data changes
+                      /// user ref.read() inside button callbacks to "do something"
+                      await ref
+                          .read(accountScreenControllerProvider.notifier)
+                          .signOut();
+                      navigator.pop();
+                    }
+                  },
           ),
         ],
       ),

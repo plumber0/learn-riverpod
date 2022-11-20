@@ -4,6 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// StateNotifier is an alternative to ValueNotifier in the Flutter SDK
 /// Ideal for managing immutable state that widgets can listen to
+///
+/// StateNotifier is a great place to write widget-specific business login
+///
+/// Rather than using state variables + setState() in your widget,
+/// consider using a StateNotifier to control the state,
+/// and 'watch' it in the widget.
+///
+/// Controllers are easy to test (with unit tests),
+/// because they don't depend on the UI
 
 class AccountScreenController extends StateNotifier<AsyncValue<void>> {
   /// AsyncValue.data needs a type
