@@ -96,7 +96,7 @@ class FakeAuthRepository implements AuthRepository {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   /// To use this, run the app with:
   /// --dart-define=useFakeRepos=true
-  final isFake = String.fromEnvironment('userFakeRepos') == 'true';
+  const isFake = String.fromEnvironment('useFakeRepos') == 'true';
   if (isFake) {
     final auth = FakeAuthRepository();
     ref.onDispose(() => auth.dispose());
