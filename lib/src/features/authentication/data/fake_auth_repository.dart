@@ -5,13 +5,17 @@ import '../domain/app_user.dart';
 
 abstract class AuthRepository {
   Stream<AppUser?> authStateChanges();
+
   AppUser? get currentUser;
+
   Future<void> signInWithEmailAndPssword(String email, String password);
+
   Future<void> createUserWithEmailAndPassword(String email, String password);
+
   Future<void> signOut();
 }
 
-class FireBaseAuthRepository implements AuthRepository{
+class FireBaseAuthRepository implements AuthRepository {
   @override
   Stream<AppUser?> authStateChanges() {
     // TODO: implement authStateChanges
