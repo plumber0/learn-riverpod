@@ -3,6 +3,7 @@ import 'package:ecommerce_app/src/features/authentication/data/fake_auth_reposit
 import 'package:ecommerce_app/src/features/authentication/presentation/account/account_screen_controller.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
+import 'package:ecommerce_app/src/utils/async_value_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app/src/common_widgets/action_text_button.dart';
 import 'package:ecommerce_app/src/common_widgets/responsive_center.dart';
@@ -30,15 +31,7 @@ class AccountScreen extends ConsumerWidget {
     /// ref.listen() is good for running some code in response to state changes
     ref.listen<AsyncValue<void>>(
       accountScreenControllerProvider,
-      (previousState, state) {
-        if (!state.isLoading && state.hasError) {
-          showExceptionAlertDialog(
-            context: context,
-            title: 'Error'.hardcoded,
-            exception: state.error,
-          );
-        }
-      },
+      (_, state) => state.showAlertDialogOnError(context),
     );
     final state = ref.watch(accountScreenControllerProvider);
     return Scaffold(
@@ -67,6 +60,7 @@ class AccountScreen extends ConsumerWidget {
                       final success = await ref
                           .read(accountScreenControllerProvider.notifier)
                           .signOut();
+
                       /// What about separation of concerns?
                       /// We should move our business logic inside the controllers
                       /// but controllers should NEVER depend on the BuildContext or anything to do with the UI
