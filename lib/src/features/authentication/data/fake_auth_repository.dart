@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/app_user.dart';
@@ -38,30 +39,51 @@ class FireBaseAuthRepository implements AuthRepository{
     // TODO: implement signOut
     throw UnimplementedError();
   }
-  
-}
 
+  void dispose() {}
+}
 
 /// How to create classes in the data layer:
 /// 1. Design the API (public interface)
 /// 2. Implement it
 
 class FakeAuthRepository implements AuthRepository {
-  @override
-  Stream<AppUser?> authStateChanges() => Stream.value(null);
+  final _authState = InMemoryStore<AppUser?>(null);
 
   @override
-  AppUser? get currentUser => null;
+  Stream<AppUser?> authStateChanges() => _authState.stream;
 
   @override
-  Future<void> signInWithEmailAndPssword(String email, String password) async {}
+  AppUser? get currentUser => _authState.value;
+
+  @override
+  Future<void> signInWithEmailAndPssword(String email, String password) async {
+    if (currentUser == null) {
+      _createNewUser(email);
+    }
+  }
 
   @override
   Future<void> createUserWithEmailAndPassword(
-      String email, String password) async {}
+      String email, String password) async {
+    if (currentUser == null) {
+      _createNewUser(email);
+    }
+  }
 
   @override
-  Future<void> signOut() async {}
+  Future<void> signOut() async {
+    _authState.value = null;
+  }
+
+  void dispose() => _authState.close();
+
+  void _createNewUser(String email) {
+    _authState.value = AppUser(
+      uid: email.split('').reversed.join(),
+      email: email,
+    );
+  }
 }
 
 /// FakeAuthRepoistory <-> AuthRepository can switch between two
@@ -69,7 +91,15 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   /// To use this, run the app with:
   /// --dart-define=useFakeRepos=true
   final isFake = String.fromEnvironment('userFakeRepos') == 'true';
-  return isFake? FakeAuthRepository() : FireBaseAuthRepository();
+  if (isFake) {
+    final auth = FakeAuthRepository();
+    ref.onDispose(() => auth.dispose());
+    return auth;
+  } else {
+    final auth = FireBaseAuthRepository();
+    ref.onDispose(() => auth.dispose());
+    return auth;
+  }
 });
 
 final authStateChangesProvider = StreamProvider.autoDispose<AppUser?>((ref) {
