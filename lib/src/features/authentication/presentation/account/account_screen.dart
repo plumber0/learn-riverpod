@@ -81,14 +81,26 @@ class AccountScreen extends ConsumerWidget {
 }
 
 /// Simple user data table showing the uid and email
-class UserDataTable extends StatelessWidget {
+class UserDataTable extends ConsumerWidget {
   const UserDataTable({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final style = Theme.of(context).textTheme.subtitle2!;
-    // TODO: get user from auth repository
-    const user = AppUser(uid: '123', email: 'test@test.com');
+
+    /// AsyncValue is quite versatile
+    /// 1. read 'value' directly (nullable)
+    /// 2. 'when', 'whenOrNull', 'maybeWhen' ...
+    /// 3. 'isLoading', 'hasValue', 'error', 'hasError' ....
+    /// 4. 'guard()' method
+    ///
+    /// You can use AsyncValue with:
+    /// 1. FutureProvider
+    /// 2. StreamProvider
+    /// 3. Your own custom StateNotifiers
+    ///
+    final user = ref.watch(authStateChangesProvider).value;
+
     return DataTable(
       columns: [
         DataColumn(
@@ -107,12 +119,12 @@ class UserDataTable extends StatelessWidget {
       rows: [
         _makeDataRow(
           'uid'.hardcoded,
-          user.uid,
+          user?.uid ?? '',
           style,
         ),
         _makeDataRow(
           'email'.hardcoded,
-          user.email ?? '',
+          user?.email ?? '',
           style,
         ),
       ],
