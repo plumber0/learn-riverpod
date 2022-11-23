@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'go_router_refresh_stream.dart';
+
 enum AppRoute {
   home,
   product,
@@ -50,6 +52,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       }
       return null;
     },
+    /// Used to trigger custom redirection logic in response to a certain event
+    /// 'refreshListenable' type is Listenable
+    ///
+    /// ChangeNotifier implements Listenable
+    /// - You can implement your ChangeNotifier subclass and pass it to refreshListenable
+    ///
+    /// Use the redirect + refreshListenable arguments to define a centralized place
+    /// to do routing in response to application state changes
+    /// -> no longer need to pop the navigator explicitly
+    refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges()),
     routes: [
       GoRoute(
         path: '/',

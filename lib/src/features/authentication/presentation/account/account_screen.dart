@@ -46,7 +46,6 @@ class AccountScreen extends ConsumerWidget {
                 ? null
                 : () async {
                     // get the navigator before the async gap
-                    final navigator = Navigator.of(context);
                     final logout = await showAlertDialog(
                       context: context,
                       title: 'Are you sure?'.hardcoded,
@@ -57,16 +56,14 @@ class AccountScreen extends ConsumerWidget {
                       /// ref.read() vs ref.watch()
                       /// use ref.watch() inside build() method to rebuild a widget when data changes
                       /// user ref.read() inside button callbacks to "do something"
-                      final success = await ref
+                      await ref
                           .read(accountScreenControllerProvider.notifier)
                           .signOut();
 
                       /// What about separation of concerns?
                       /// We should move our business logic inside the controllers
                       /// but controllers should NEVER depend on the BuildContext or anything to do with the UI
-                      if (success) {
-                        navigator.pop();
-                      }
+
                     }
                   },
           ),
