@@ -62,6 +62,7 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signInWithEmailAndPssword(String email, String password) async {
+    await Future.delayed(const Duration(seconds: 1));
     if (currentUser == null) {
       _createNewUser(email);
     }
@@ -70,6 +71,7 @@ class FakeAuthRepository implements AuthRepository {
   @override
   Future<void> createUserWithEmailAndPassword(
       String email, String password) async {
+    await Future.delayed(const Duration(seconds: 1));
     if (currentUser == null) {
       _createNewUser(email);
     }
@@ -77,8 +79,8 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {
-    await Future.delayed(const Duration(seconds: 3));
-    throw Exception('Connection failed');
+    await Future.delayed(const Duration(seconds: 1));
+    // throw Exception('Connection failed');
     _authState.value = null;
   }
 
