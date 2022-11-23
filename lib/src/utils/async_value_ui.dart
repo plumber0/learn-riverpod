@@ -9,7 +9,7 @@ extension AsyncValueUI on AsyncValue {
     if (!isLoading && hasError) {
       showExceptionAlertDialog(
         context: context,
-        title: 'Error'.hardcoded,
+        title: 'AsncValueUI Error'.hardcoded,
         exception: error,
       );
     }

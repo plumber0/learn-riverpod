@@ -102,8 +102,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'checkout',
                 name: AppRoute.checkout.name,
+                /// refreshListenable will cause GoRouter to rebuild the current route
+                /// when the auth state changes
+                ///
+                /// we need to be careful with pageKeys!
+                /// https://www.youtube.com/watch?v=kn0EOS-ZiIc
+                ///
+                /// - this kind of bug can easily go undetected
+                /// - changes to some part of the app (sign in)
+                ///   affected a differnt part of the app (checkout)
+                ///
+                /// - this would have been discovered right away by integration tests
+                ///
                 pageBuilder: (context, state) => MaterialPage(
-                  key: state.pageKey,
+                  key: ValueKey(state.location),
                   fullscreenDialog: true,
                   child: const CheckoutScreen(),
                 ),
