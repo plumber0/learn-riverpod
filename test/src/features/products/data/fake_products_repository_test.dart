@@ -20,4 +20,24 @@ void main() {
       kTestProducts[0],
     );
   });
+
+  test('getProduct(100) return null', () {
+    /// getProduct('100') is called immediately,
+    /// This makes the test fail right away (unhandled exception)
+    ///
+    ///
+    /// Solution : put the method into a closure
+    ///
+    /// if you need to test a function that throws, put it inside a closure
+    /// This will ensure it is called lazily by the expect method
+    /// (which will catch the exception)
+
+    // expect(productsRepository.getProduct('100'), throwsStateError);
+
+    final productsRepository = FakeProductsRepository();
+    expect(
+      () => productsRepository.getProduct('100'),
+      throwsStateError,
+    );
+  });
 }
