@@ -1,6 +1,7 @@
 import 'package:ecommerce_app/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../utils/delay.dart';
 import '../domain/app_user.dart';
 
 abstract class AuthRepository {
@@ -62,7 +63,7 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signInWithEmailAndPssword(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
+    await delay(true);
     if (currentUser == null) {
       _createNewUser(email);
     }
@@ -71,7 +72,7 @@ class FakeAuthRepository implements AuthRepository {
   @override
   Future<void> createUserWithEmailAndPassword(
       String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
+    await delay(true);
     if (currentUser == null) {
       _createNewUser(email);
     }
@@ -79,7 +80,7 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await delay(true);
     // throw Exception('Connection failed');
     _authState.value = null;
   }
