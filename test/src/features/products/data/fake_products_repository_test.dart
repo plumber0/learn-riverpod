@@ -34,10 +34,15 @@ void main() {
 
     // expect(productsRepository.getProduct('100'), throwsStateError);
 
+    // expect(
+    //   () => productsRepository.getProduct('100'),
+    //   throwsStateError,
+    // );
+
     final productsRepository = FakeProductsRepository();
     expect(
-      () => productsRepository.getProduct('100'),
-      throwsStateError,
+      productsRepository.getProduct('100'),
+      null,
     );
   });
 }
