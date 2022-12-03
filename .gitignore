@@ -117,3 +117,9 @@ firebase-exports
 .env.dev
 .env.stg
 .env.prod
+
+# how flutter test --coverage create coverage file
+# we can view this by using 2 vscode extensions
+# 1. Flutter Coverage
+# 2. Coverage Gutters
+coverage/lcov.info
