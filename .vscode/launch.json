@@ -11,7 +11,8 @@
       "program": "lib/main.dart",
       "args": [
         "--target",
-        "lib/main.dart"
+        "lib/main.dart",
+        "--dart-define=useFakeRepos=true"
       ]
     }
   ]
