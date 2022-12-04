@@ -1,3 +1,4 @@
+@Timeout(Duration(milliseconds: 500))
 import 'package:ecommerce_app/src/features/authentication/presentation/account/account_screen_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,9 +83,6 @@ void main() {
       // a shorter test timeout guarantees that when our tests hang, they fail quickly
       // Running hundreds/thousands of tests on CI can be expensive,
       // so we want them fast even when they fail
-      timeout: const Timeout(Duration(
-        milliseconds: 500,
-      )),
     );
 
     test(
@@ -111,9 +109,6 @@ void main() {
         expect(controller.debugState, isA<AsyncError>());
         verify(authRepository.signOut).called(1);
       },
-      timeout: const Timeout(Duration(
-        milliseconds: 500,
-      )),
     );
   });
 }
