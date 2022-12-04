@@ -42,44 +42,80 @@ void main() {
     /// 1. decide if the signOut() method should succeed or throw an exception
     /// 2. check if signOut() is actually called
 
-    test('signOut success', () async {
-      final authRepository = MockAuthRepository();
+    test(
+      'signOut success',
+      () async {
+        final authRepository = MockAuthRepository();
 
-      /// Method stub
-      /// tells the mock what to return/throw when the method is called
-      when(authRepository.signOut).thenAnswer((_) => Future.value());
-      final controller =
-          AccountScreenController(authRepository: authRepository);
+        /// Method stub
+        /// tells the mock what to return/throw when the method is called
+        when(authRepository.signOut).thenAnswer((_) => Future.value());
+        final controller =
+            AccountScreenController(authRepository: authRepository);
 
-      await controller.signOut();
-      expect(controller.debugState, const AsyncData<void>(null));
+        /// expectLater
+        /// - same as expect, but returns a Future
+        /// - emitsInOrder is an 'asynchronous matcher'
+        /// - expectLater carries more meaning
+        /// clear that we expect something to happen in the future,
+        /// after signOut() has completed
 
-      verify(authRepository.signOut).called(1);
+        expectLater(
+            controller.stream,
+            emitsInOrder(const [
+              AsyncLoading<void>(),
+              AsyncData<void>(null),
+            ]));
+        await controller.signOut();
 
-      /// expect vs verify
-      ///
-      /// Given our controller(object uder test):
-      /// - use expect() to check the output/state/return value
-      /// - use verify() to check the behavior
-    });
+        verify(authRepository.signOut).called(1);
 
-    test('signOut failure', () async {
-      final authRepository = MockAuthRepository();
-      final exception = Exception('Connection failed');
-      when(authRepository.signOut).thenThrow(exception);
+        /// expect vs verify
+        ///
+        /// Given our controller(object uder test):
+        /// - use expect() to check the output/state/return value
+        /// - use verify() to check the behavior
+      },
+      // a shorter test timeout guarantees that when our tests hang, they fail quickly
+      // Running hundreds/thousands of tests on CI can be expensive,
+      // so we want them fast even when they fail
+      timeout: const Timeout(Duration(
+        milliseconds: 500,
+      )),
+    );
 
-      final controller =
-          AccountScreenController(authRepository: authRepository);
+    test(
+      'signOut failure',
+      () async {
+        final authRepository = MockAuthRepository();
+        final exception = Exception('Connection failed');
+        when(authRepository.signOut).thenThrow(exception);
 
-      await controller.signOut();
+        final controller =
+            AccountScreenController(authRepository: authRepository);
 
-      expect(controller.debugState.hasError, true);
+        expectLater(
+            controller.stream,
+            emitsInOrder([
+              const AsyncLoading<void>(),
+              // Predicates give us fine grained control over the values we want to test
+              predicate<AsyncValue<void>>((value) {
+                expect(value.hasError, true);
+                return true;
+              }),
+            ]));
 
-      /// isA<Type> is a generic type matcher
-      /// useful to check if a value is of a certain type
-      expect(controller.debugState, isA<AsyncError>());
-      verify(authRepository.signOut).called(1);
-    });
+        await controller.signOut();
+
+        /// isA<Type> is a generic type matcher
+        /// useful to check if a value is of a certain type
+        expect(controller.debugState, isA<AsyncError>());
+        verify(authRepository.signOut).called(1);
+      },
+      timeout: const Timeout(Duration(
+        milliseconds: 500,
+      )),
+    );
   });
 }
 
