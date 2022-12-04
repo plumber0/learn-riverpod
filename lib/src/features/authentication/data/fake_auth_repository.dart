@@ -53,6 +53,9 @@ class FireBaseAuthRepository implements AuthRepository {
 /// 2. Implement it
 
 class FakeAuthRepository implements AuthRepository {
+  FakeAuthRepository({this.addDelay = true});
+
+  final bool addDelay;
   final _authState = InMemoryStore<AppUser?>(null);
 
   @override
