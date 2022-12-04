@@ -54,6 +54,40 @@ And state is AsyncData
       final result = await controller.submit(testEmail, testPassword);
       expect(result, true);
     }, timeout: const Timeout(Duration(microseconds: 500)));
+
+    test("""
+Given formType is signIn
+When singInWithEmailAndPassword fails
+Then return false
+And state is AsyncError
+""", () async {
+      final authRepository = MockAuthRepository();
+      final exception = Exception('Connection failed');
+      when(() =>
+              authRepository.signInWithEmailAndPssword(testEmail, testPassword))
+          .thenThrow(exception);
+      final controller = EmailPasswordSignInController(
+          formType: EmailPasswordSignInFormType.signIn,
+          authRepository: authRepository);
+
+      expectLater(
+        controller.stream,
+        emitsInOrder([
+          EmailPasswordSignInState(
+            formType: EmailPasswordSignInFormType.signIn,
+            value: const AsyncLoading<void>(),
+          ),
+          predicate<EmailPasswordSignInState>((state) {
+            expect(state.formType, EmailPasswordSignInFormType.signIn);
+            expect(state.value.hasError, true);
+            return true;
+          }),
+        ]),
+      );
+
+      final result = await controller.submit(testEmail, testPassword);
+      expect(result, false);
+    }, timeout: const Timeout(Duration(microseconds: 500)));
   });
 
   group('updateFormType', () {});
