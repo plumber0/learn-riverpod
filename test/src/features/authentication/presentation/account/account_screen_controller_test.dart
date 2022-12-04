@@ -62,5 +62,31 @@ void main() {
       /// - use expect() to check the output/state/return value
       /// - use verify() to check the behavior
     });
+
+    test('signOut failure', () async {
+      final authRepository = MockAuthRepository();
+      final exception = Exception('Connection failed');
+      when(authRepository.signOut).thenThrow(exception);
+
+      final controller =
+          AccountScreenController(authRepository: authRepository);
+
+      await controller.signOut();
+
+      expect(controller.debugState.hasError, true);
+
+      /// isA<Type> is a generic type matcher
+      /// useful to check if a value is of a certain type
+      expect(controller.debugState, isA<AsyncError>());
+      verify(authRepository.signOut).called(1);
+    });
   });
 }
+
+
+/// Testing with Mocks
+/// 
+/// 1. Create a mock class for each dependency in our object under test
+/// 2. Configure the mock by sutbbing all the methods that will be called (return, answer or throw)
+/// 3. Call the method we want to test
+/// 4. Verify the results(with verify and/or expect)
