@@ -1,18 +1,14 @@
-import 'package:ecommerce_app/src/features/authentication/data/fake_auth_repository.dart';
 import 'package:ecommerce_app/src/features/authentication/presentation/account/account_screen_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../mocks.dart';
+
 /// How to work with mocks
 /// - create mock classes for any dependencies
 /// - mock methods and properties will always return null
 /// - use stub!
-
-class MockAuthRepository extends Mock implements FakeAuthRepository {
-  /// Mock objects implement all methods in the parent interface
-  /// but they return null by default!
-}
 
 void main() {
   late MockAuthRepository authRepository;
