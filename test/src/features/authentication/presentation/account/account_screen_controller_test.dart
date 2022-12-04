@@ -15,12 +15,23 @@ class MockAuthRepository extends Mock implements FakeAuthRepository {
 }
 
 void main() {
+  late MockAuthRepository authRepository;
+  late AccountScreenController controller;
+
+  /// Are test lifecycle methods a good idea?
+  ///
+  /// - risk of introducing side effects where some objects or state are
+  /// unintentionally shared across tests,
+  /// leading to test failures that are hard to debug
+
+  setUp(() {
+    print('setup has called');
+    authRepository = MockAuthRepository();
+    controller = AccountScreenController(authRepository: authRepository);
+  });
+
   group('AccountScreenController', () {
     test('initial state is AsyncValue.data', () {
-      final authRepository = MockAuthRepository();
-      final controller =
-          AccountScreenController(authRepository: authRepository);
-
       verifyNever(authRepository.signOut);
 
       /// When to use type annotations
@@ -45,13 +56,9 @@ void main() {
     test(
       'signOut success',
       () async {
-        final authRepository = MockAuthRepository();
-
         /// Method stub
         /// tells the mock what to return/throw when the method is called
         when(authRepository.signOut).thenAnswer((_) => Future.value());
-        final controller =
-            AccountScreenController(authRepository: authRepository);
 
         /// expectLater
         /// - same as expect, but returns a Future
@@ -87,12 +94,8 @@ void main() {
     test(
       'signOut failure',
       () async {
-        final authRepository = MockAuthRepository();
         final exception = Exception('Connection failed');
         when(authRepository.signOut).thenThrow(exception);
-
-        final controller =
-            AccountScreenController(authRepository: authRepository);
 
         expectLater(
             controller.stream,
@@ -119,9 +122,8 @@ void main() {
   });
 }
 
-
 /// Testing with Mocks
-/// 
+///
 /// 1. Create a mock class for each dependency in our object under test
 /// 2. Configure the mock by sutbbing all the methods that will be called (return, answer or throw)
 /// 3. Call the method we want to test
